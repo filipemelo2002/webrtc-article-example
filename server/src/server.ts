@@ -1,6 +1,7 @@
 import express from "express";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import { RoomService } from "./room.service";
 
 const app = express();
 const httpServer = createServer(app);
@@ -11,8 +12,7 @@ const io = new Server(httpServer, {
   },
 });
 
-io.on("connection", () => {
-  console.log("connected");
-});
+const roomService = new RoomService(io);
+roomService.initialize();
 
 httpServer.listen(3000);
