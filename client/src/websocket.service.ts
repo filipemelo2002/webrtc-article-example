@@ -24,9 +24,10 @@ export class WebsocketService {
     this.websocket.on("user/joined", callback);
   }
 
-  sendOffer(offer: RTCSessionDescription) {
+  sendOffer(roomName: string, offer: RTCSessionDescription) {
     this.websocket.emit("offer/send", {
-      offer
+      offer,
+      roomName,
     })
   }
 
@@ -34,9 +35,10 @@ export class WebsocketService {
     this.websocket.on("offer/receive", callback);
   }
   
-  sendAnswer(answer: RTCSessionDescription) {
+  sendAnswer(roomName: string, answer: RTCSessionDescription) {
     this.websocket.emit("answer/send", {
-      answer
+      answer,
+      roomName
     })
   }
 
