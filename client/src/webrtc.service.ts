@@ -38,8 +38,19 @@ export class WebRTCService {
   
   onStream(cb: (media: MediaStream) => void ) {
     this.peerConnection.ontrack = function ({ streams: [stream] }) {
-      console.log(stream)
       cb(stream);
     };
+  }
+
+  onICECandidateChange(cb: (agr: RTCIceCandidate ) => void ) {
+    this.peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+      if (event.candidate) {
+        cb(event.candidate);
+      }
+    }
+  }
+
+  async setICECandidate(candidate: RTCIceCandidate) {
+    await this.peerConnection.addIceCandidate(candidate);
   }
 }

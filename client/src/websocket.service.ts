@@ -43,4 +43,17 @@ export class WebsocketService {
   receiveAnswer(callback: (answer: RTCSessionDescriptionInit) => void) {
     this.websocket.on("answer/receive", ({ answer }) => callback(answer));
   }
+
+  sendIceCandidate(roomName: string, iceCandidate: RTCIceCandidate) {
+    this.websocket.emit("ice/send", {
+      roomName,
+      iceCandidate
+    })
+  }
+
+  receiveIceCandidate(cb: (arg: RTCIceCandidate) => void ) {
+    this.websocket.on("ice/receive", ({iceCandidate}) => {
+      cb(iceCandidate);
+    })
+  }
 }

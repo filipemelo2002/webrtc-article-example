@@ -16,6 +16,7 @@ export class RoomService {
       this.handleOnJoinRoom(socket);
       this.handleOnSendOffer(socket);
       this.handleOnSendAnswer(socket);
+      this.handleOnSendIceCandidate(socket);
     });
   }
 
@@ -31,16 +32,16 @@ export class RoomService {
 
   handleOnJoinRoom(socket: Socket) {
     socket.on("room/join", (payload) => {
-      const {roomName} = payload;
-      
+      const { roomName } = payload;
+
       const room = this.rooms.get(roomName);
-      
+
       if (!room) {
         return;
       }
       room.guest = socket.id;
       socket.to(room.owner).emit("user/joined");
-    })
+    });
   }
 
   handleOnSendOffer(socket: Socket) {
@@ -48,14 +49,14 @@ export class RoomService {
       const { roomName, offer } = payload;
 
       const room = this.rooms.get(roomName);
-      
+
       if (!room || !room.guest) {
         return;
       }
       socket.to(room.guest).emit("offer/receive", {
-        offer
-      })
-    })
+        offer,
+      });
+    });
   }
 
   handleOnSendAnswer(socket: Socket) {
@@ -69,8 +70,27 @@ export class RoomService {
       }
 
       socket.to(room.owner).emit("answer/receive", {
-        answer
-      })
-    })
+        answer,
+      });
+    });
+  }
+
+  handleOnSendIceCandidate(socket: Socket) {
+    socket.on("ice/send", (payload) => {
+      const { roomName, iceCandidate } = payload;
+      console.log({roomName, iceCandidate});
+      const room = this.rooms.get(roomName);
+
+      if (!room || !room.guest) {
+        return;
+      }
+
+      const isOwner = room.owner === socket.id;
+      const to = isOwner ? room.guest : room.owner;
+      console.log(socket.id, to)
+      socket.to(to).emit("ice/receive", {
+        iceCandidate,
+      });
+    });
   }
 }

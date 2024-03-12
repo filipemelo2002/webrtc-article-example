@@ -27,6 +27,7 @@ export function useAppState() {
     socketService.receiveAnswer(async (answer) => {
       await webRTCService.setRemoteOffer(answer);
     })
+    setupIceCandidate(roomName)
   }
   
   const onJoinRoom = () => {
@@ -44,8 +45,17 @@ export function useAppState() {
       socketService.sendAnswer(roomName, answer);
     })
     webRTCService.onStream(startStream)
+    setupIceCandidate(roomName)
   }
 
+  function setupIceCandidate (roomName: string) {
+    webRTCService.onICECandidateChange(async (candidate) => {
+      socketService.sendIceCandidate(roomName, candidate)
+    })
+    socketService.receiveIceCandidate(async (candidate) => {
+      await webRTCService.setICECandidate(candidate)
+    })
+  }
   async function startLocalStream () {
     const mediaStream = await webRTCService.getMediaStream();
     startStream(mediaStream, true);
