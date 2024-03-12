@@ -28,7 +28,19 @@ export function useAppState() {
   }
   
   const onJoinRoom = () => {
-    console.log("Join room")
+    if (!inputRef.current?.value) {
+      return;
+    }
+
+    const roomName = inputRef.current.value
+
+    socketService.joinRoom(roomName);
+    socketService.receiveOffer(async (offer) => {
+      await webRTCService.setRemoteOffer(offer);
+      const answer = await webRTCService.makeAnswer();
+      await webRTCService.setLocalOffer(answer);
+      socketService.sendAnswer(roomName, answer);
+    })
   }
 
   return {
