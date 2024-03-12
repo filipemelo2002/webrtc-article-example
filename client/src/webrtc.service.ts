@@ -35,4 +35,11 @@ export class WebRTCService {
     });
     return mediaStream;
   }
+  
+  onStream(cb: (media: MediaStream) => void ) {
+    this.peerConnection.ontrack = function ({ streams: [stream] }) {
+      console.log(stream)
+      cb(stream);
+    };
+  }
 }
