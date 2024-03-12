@@ -10,15 +10,6 @@ export function useAppState() {
   const inputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const startLocalStream = async () => {
-    if (!videoRef.current) {
-      return;
-    }
-    const mediaStream = await webRTCService.getMediaStream();
-    videoRef.current.srcObject = mediaStream;
-    videoRef.current.muted = true;
-    videoRef.current.play();
-  }
   const onCreateRoom = async () => {
     if (!inputRef.current?.value) {
       return;
@@ -52,6 +43,21 @@ export function useAppState() {
       await webRTCService.setLocalOffer(answer);
       socketService.sendAnswer(roomName, answer);
     })
+    webRTCService.onStream(startStream)
+  }
+
+  async function startLocalStream () {
+    const mediaStream = await webRTCService.getMediaStream();
+    startStream(mediaStream, true);
+  }
+
+  function startStream(mediaStream: MediaStream, isLocal = false ) {
+    if (!videoRef.current) {
+      return;
+    }
+    videoRef.current.srcObject = mediaStream;
+    videoRef.current.muted = isLocal;
+    videoRef.current.play();
   }
 
   return {
