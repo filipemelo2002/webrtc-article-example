@@ -24,25 +24,25 @@ export class WebsocketService {
     this.websocket.on("user/joined", callback);
   }
 
-  sendOffer(roomName: string, offer: RTCSessionDescription) {
+  sendOffer(roomName: string, offer: RTCSessionDescriptionInit) {
     this.websocket.emit("offer/send", {
       offer,
       roomName,
     })
   }
 
-  receiveOffer(callback: (offer: RTCSessionDescription) => void) {
+  receiveOffer(callback: (offer: RTCSessionDescriptionInit) => void) {
     this.websocket.on("offer/receive", callback);
   }
   
-  sendAnswer(roomName: string, answer: RTCSessionDescription) {
+  sendAnswer(roomName: string, answer: RTCSessionDescriptionInit) {
     this.websocket.emit("answer/send", {
       answer,
       roomName
     })
   }
 
-  receiveAnswer(callback: (answer: RTCSessionDescription) => void) {
+  receiveAnswer(callback: (answer: RTCSessionDescriptionInit) => void) {
     this.websocket.on("answer/receive", callback);
   }
 }
