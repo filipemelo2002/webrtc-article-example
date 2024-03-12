@@ -5,7 +5,8 @@ function App() {
   const {
     inputRef,
     onCreateRoom,
-    onJoinRoom
+    onJoinRoom,
+    videoRef
   } = useAppState();
   return (
     <>
@@ -14,7 +15,7 @@ function App() {
         <button type="button" onClick={onJoinRoom}>Join</button>
         <button type="button" onClick={onCreateRoom}>Create</button>
       </form>
-      <video width="320" height="240"/>
+      <video width="500" ref={videoRef}/>
     </>
   )
 }

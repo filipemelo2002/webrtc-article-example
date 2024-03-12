@@ -8,13 +8,24 @@ const webRTCService = new WebRTCService();
 export function useAppState() {
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const onCreateRoom = () => {
+  const startLocalStream = async () => {
+    if (!videoRef.current) {
+      return;
+    }
+    const mediaStream = await webRTCService.getMediaStream();
+    videoRef.current.srcObject = mediaStream;
+    videoRef.current.muted = true;
+    videoRef.current.play();
+  }
+  const onCreateRoom = async () => {
     if (!inputRef.current?.value) {
       return;
     }
 
-    const roomName = inputRef.current.value
+    const roomName = inputRef.current.value;
+    await startLocalStream();
     socketService.createRoom(roomName)
     socketService.onNewUserJoined(async () => {
       const offer = await webRTCService.makeOffer();
@@ -46,6 +57,7 @@ export function useAppState() {
   return {
     onCreateRoom,
     onJoinRoom,
-    inputRef
+    inputRef,
+    videoRef
   }
 }
